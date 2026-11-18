@@ -1,0 +1,63 @@
+{
+  "scope": "采购公司",
+  "resources": {
+    "/registry/certificates": {
+      "body": {
+        "registry": "R1",
+        "certificates": [
+          {
+            "id": "GC100",
+            "href": "/registry/certificates/records/GC100"
+          }
+        ]
+      }
+    },
+    "/registry/certificates/records/GC100": {
+      "body": {
+        "certificate": "GC100",
+        "registry": "R1",
+        "generation": "GEN-A",
+        "quantityMWh": "25",
+        "beneficiary": "采购公司",
+        "status": "retired"
+      }
+    },
+    "/registry/certificates/relations/GC100": {
+      "body": {
+        "ranges": [
+          [
+            100,
+            179
+          ],
+          [
+            180,
+            199
+          ]
+        ],
+        "claims": [
+          {
+            "range": [
+              170,
+              199
+            ],
+            "beneficiary": "另一公司"
+          }
+        ]
+      }
+    }
+  },
+  "portal": {
+    "identity": "certificate",
+    "records": {
+      "GC100": {
+        "certificate": "GC100",
+        "registry": "R1",
+        "generation": "GEN-A",
+        "quantityMWh": "25",
+        "beneficiary": "采购公司",
+        "status": "retired"
+      }
+    },
+    "version": 1
+  }
+}
