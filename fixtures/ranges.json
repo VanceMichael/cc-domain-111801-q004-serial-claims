@@ -1,0 +1,120 @@
+{
+  "scope": "采购公司",
+  "contract": {
+    "certificates": [
+      {
+        "certificate": "GC200",
+        "ranges": [
+          [1000, 1149]
+        ]
+      }
+    ]
+  },
+  "resources": {
+    "/registry/certificates": {
+      "body": {
+        "registry": "R1",
+        "certificates": [
+          {
+            "id": "GC200",
+            "href": "/registry/certificates/records/GC200",
+            "ranges": [[1000, 1099]]
+          },
+          {
+            "id": "GC200-S1",
+            "href": "/registry/certificates/records/GC200-S1",
+            "certificate": "GC200"
+          },
+          {
+            "id": "GC200-X1",
+            "href": "/registry/certificates/records/GC200-X1",
+            "certificate": "GC200"
+          },
+          {
+            "id": "GC200-R1",
+            "href": "/registry/certificates/records/GC200-R1",
+            "certificate": "GC200"
+          },
+          {
+            "id": "GC200-P1",
+            "href": "/registry/certificates/records/GC200-P1",
+            "certificate": "GC200",
+            "ranges": [[1100, 1149]]
+          }
+        ]
+      }
+    },
+    "/registry/certificates/records/GC200": {
+      "body": {
+        "certificate": "GC200",
+        "registry": "R1",
+        "generation": "GEN-A",
+        "quantityMWh": "50",
+        "beneficiary": "采购公司",
+        "status": "retired"
+      }
+    },
+    "/registry/certificates/records/GC200-S1": {
+      "body": {
+        "certificate": "GC200",
+        "registry": "R1",
+        "claims": [
+          {
+            "ranges": [[1000, 1049], [1060, 1079]],
+            "generation": "GEN-A",
+            "beneficiary": "采购公司",
+            "status": "retired",
+            "quantityMWh": "35"
+          },
+          {
+            "ranges": [[1080, 1089]],
+            "generation": "GEN-B",
+            "beneficiary": "采购公司",
+            "status": "retired",
+            "quantityMWh": "5"
+          },
+          {
+            "ranges": [[1090, 1099]],
+            "generation": "GEN-B",
+            "beneficiary": "采购公司",
+            "status": "transferable"
+          }
+        ]
+      }
+    },
+    "/registry/certificates/records/GC200-X1": {
+      "body": {
+        "certificate": "GC200",
+        "registry": "R1",
+        "claims": [
+          {
+            "ranges": [[1070, 1089]],
+            "generation": "GEN-B",
+            "beneficiary": "另一公司",
+            "status": "retired",
+            "quantityMWh": "10"
+          }
+        ]
+      }
+    },
+    "/registry/certificates/records/GC200-R1": {
+      "body": {
+        "certificate": "GC200",
+        "registry": "R1",
+        "claims": [
+          {
+            "ranges": [[1040, 1049]],
+            "beneficiary": "采购公司",
+            "status": "reversed"
+          }
+        ]
+      }
+    },
+    "/registry/certificates/records/GC200-P1": {
+      "status": 404,
+      "body": {
+        "error": "原件尚未开放"
+      }
+    }
+  }
+}

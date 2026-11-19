@@ -13,7 +13,13 @@ export class Archive {
       digest TEXT PRIMARY KEY, location TEXT NOT NULL, observed_at TEXT NOT NULL, size INTEGER NOT NULL);
       CREATE TABLE IF NOT EXISTS receipts (
       scope TEXT NOT NULL, business_key TEXT NOT NULL, digest TEXT NOT NULL, record TEXT NOT NULL,
-      decision TEXT NOT NULL, PRIMARY KEY(scope,business_key,digest));`);
+      decision TEXT NOT NULL, PRIMARY KEY(scope,business_key,digest));
+      CREATE TABLE IF NOT EXISTS attempts (
+      scope TEXT NOT NULL, identity TEXT NOT NULL, href TEXT NOT NULL, observed_at TEXT NOT NULL,
+      result TEXT NOT NULL, detail TEXT NOT NULL, hints TEXT);`);
+    // 旧库迁移：收据补充取得时间，历史行保持 NULL，不抹掉已有资料。
+    const columns = this.database.prepare('PRAGMA table_info(receipts)').all().map(column => column.name);
+    if (!columns.includes('received_at')) this.database.exec('ALTER TABLE receipts ADD COLUMN received_at TEXT');
     return this;
   }
   async preserve(document) {
@@ -29,10 +35,25 @@ export class Archive {
   }
   put(scope, key, digest, record, decision) {
     if (!this.database.prepare('SELECT digest FROM evidence WHERE digest=?').get(digest)) throw new Error('原文尚未保存');
-    this.database.prepare('INSERT OR IGNORE INTO receipts VALUES(?,?,?,?,?)').run(scope, key, digest, JSON.stringify(record), JSON.stringify(decision));
+    this.database.prepare('INSERT OR IGNORE INTO receipts VALUES(?,?,?,?,?,?)').run(scope, key, digest, JSON.stringify(record), JSON.stringify(decision), new Date().toISOString());
+  }
+  attempt(scope, identity, href, result, detail, hints = null) {
+    this.database.prepare('INSERT INTO attempts VALUES(?,?,?,?,?,?,?)')
+      .run(scope, identity, href, new Date().toISOString(), result, detail, hints ? JSON.stringify(hints) : null);
+  }
+  attempts(scope) {
+    return this.database.prepare('SELECT * FROM attempts WHERE scope=? ORDER BY observed_at, rowid').all(scope)
+      .map(row => ({ ...row, hints: row.hints ? JSON.parse(row.hints) : null }));
   }
   records(scope) {
-    return this.database.prepare('SELECT * FROM receipts WHERE scope=? ORDER BY business_key,digest').all(scope).map(row => ({ ...row, record: JSON.parse(row.record), decision: JSON.parse(row.decision) }));
+    return this.database.prepare('SELECT * FROM receipts WHERE scope=? ORDER BY received_at, business_key, digest').all(scope)
+      .map(row => ({ ...row, record: JSON.parse(row.record), decision: JSON.parse(row.decision) }));
+  }
+  history(scope) {
+    return this.database.prepare(`SELECT r.*, e.location, e.observed_at FROM receipts r
+      LEFT JOIN evidence e ON e.digest=r.digest WHERE r.scope=?
+      ORDER BY r.received_at, r.business_key, r.digest`).all(scope)
+      .map(row => ({ ...row, record: JSON.parse(row.record), decision: JSON.parse(row.decision) }));
   }
   async original(digest) {
     if (!/^[a-f0-9]{64}$/.test(digest)) throw new Error('原文摘要无效');
